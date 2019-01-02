@@ -20,23 +20,27 @@ from bpy_extras.io_utils import ExportHelper
 
 def get_coordinate_str(vertex):
 	co = list(vertex.co)
-	return """		%.2ff, %.2ff, %.2ff""" % (co[0], co[2], co[1])
+	return """			%.2ff, %.2ff, %.2ff""" % (co[0], co[2], co[1])
 
 def do_export(context, props, filepath):
 	
-	package_name = "defaultpackage" if not props.class_path else props.class_path 
+	package_name = "defaultpackage" if not props.package_name else props.package_name 
 
 	basedir = os.path.dirname(filepath)
 	filename = os.path.splitext(filepath)[0]
+	classname = os.path.splitext(os.path.basename(filepath))[0]
 	
 	selection = context.selected_objects
 
 	meshpath = os.path.join(basedir, "%s.java" % filename)
 	file = open(meshpath, 'w')
 
-	file.write("""
-package %s;
+	file.write("""package %s;
 """ % package_name)
+
+	file.write("""
+public class %s {
+""" % classname)
 
 	for mesh in selection:
 
@@ -58,10 +62,10 @@ package %s;
 				vtx = mesh.data.vertices[vertex]
 				
 				vertexPosition = list(mesh.data.vertices[vertex].co)
-				vertexPositionList.append("""		%.2ff, %.2ff, %.2ff""" % (vertexPosition[0], vertexPosition[2], vertexPosition[1]))
+				vertexPositionList.append("""			%.2ff, %.2ff, %.2ff""" % (vertexPosition[0], vertexPosition[2], vertexPosition[1]))
 				
 				vertexNormal = list(mesh.data.vertices[vertex].normal) if triangle.use_smooth else list(triangle.normal)
-				vertexNormalList.append("""		%.2ff, %.2ff, %.2ff""" % (vertexNormal[0], vertexNormal[1], vertexNormal[2]))
+				vertexNormalList.append("""			%.2ff, %.2ff, %.2ff""" % (vertexNormal[0], vertexNormal[1], vertexNormal[2]))
 				
 				for uv_layer in mesh.data.uv_layers:
 					uvCoord = uv_layer.data[triangle.loop_indices[i]].uv
@@ -140,41 +144,43 @@ package %s;
 		vertexUVString = ",\n".join(faceUVList)
 					
 		file.write("""
-public class %s
-{
-	private static float[] vertexPositions = 
+	public static class %s
 	{
+		private static float[] vertexPositions = 
+		{
 %s
-	};
-	
-	private static float[] vertexNormals = 
-	{
-%s
-	};
-	
-	private static float[] vertexUVs = 
-	{
-%s
-	};
-	
-	public static float[] GetVertexPositions() {
-		return vertexPositions;
-	}
-	
-	public static float[] GetVertexNormals() {
-		return vertexNormals;
-	}
-	
-	public static float[] GetVertexUVs() {
-		return vertexUVs;
-	}
-	
-	public static int GetCount() {
-		return %i;
-	}
-}
-""" % (name, vertexPositionString, vertexNormalString, vertexUVString, n))
+		};
 		
+		private static float[] vertexNormals = 
+		{
+%s
+		};
+		
+		private static float[] vertexUVs = 
+		{
+%s
+		};
+		
+		public static float[] GetVertexPositions() {
+			return vertexPositions;
+		}
+		
+		public static float[] GetVertexNormals() {
+			return vertexNormals;
+		}
+		
+		public static float[] GetVertexUVs() {
+			return vertexUVs;
+		}
+		
+		public static int GetCount() {
+			return %i;
+		}
+	}
+""" % (name, vertexPositionString, vertexNormalString, vertexUVString, n))
+	
+	file.write("""}""")
+
 	file.flush()
 	file.close()
 
@@ -183,12 +189,12 @@ public class %s
 class ExportModelJava(bpy.types.Operator, ExportHelper):
 	'''Exports geometry of the active Model to a Java source file.'''
 	bl_idname = "export_object.java"
-	bl_label = "Export Model to Java (.java)"
+	bl_label = "Export to Java (.java)"
 
 	filename_ext = ".java"
 
-	class_path = StringProperty(name="Java Classpath",
-							description="The Java Class path to use when generating the exported source file",
+	package_name = StringProperty(name="Package Name",
+							description="The Package Name to use when generating the exported source file",
 							default="")
 	
 	@classmethod
