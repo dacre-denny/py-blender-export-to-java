@@ -75,10 +75,13 @@ This Blender Add-on is listed under the Import-Export add-on category as "Export
 1. Select Mesh objects in your Blender scene to be exported to the Java source file.
 
 2. From Blender's file menu, select "Java Source File (.java)" from the Export sub-menu:
-![1](/doc/usage-1.jpg)
+   
+   ![1](/doc/usage-1.jpg)
 
 3. From the export dialog, the Package for the exported source file can be specified via the "Package Name" field (if no package name is provided "defaultpackage" will be used):
-![1](/doc/usage-2.jpg)
+   
+   ![1](/doc/usage-2.jpg)
 
 4. Enter a filename for the source file and click "Export to Java":
-![1](/doc/usage-3.jpg) 
+   
+   ![1](/doc/usage-3.jpg) 
