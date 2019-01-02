@@ -63,7 +63,7 @@ The structure of the exported Java source file is as follows:
 
 ### Installation
 
-Download the `.py` script and follow [this guide](https://blender.stackexchange.com/a/1689) to install the script.
+Download the `export-to-java.py` script and follow [this guide](https://blender.stackexchange.com/a/1689) to install the script.
 
 This Blender Add-on is listed under the "Import-Export" Add-on category "Export to Java (.java)":
 ![1](/doc/install-1.jpg)
